@@ -19,8 +19,8 @@ keys = [
          Key([], "XF86AudioMute", lazy.spawn("amixer sset Master toggle")),
          
          # Brightness Control
-    	 Key([], "XF86MonBrightnessUp", lazy.spawn("brightnessctl set +10%")),
-    	 Key([], "XF86MonBrightnessDown", lazy.spawn("brightnessctl set 10%-")),
+    	 Key([], "XF86MonBrightnessUp", lazy.spawn("xbacklight -inc 10")),
+    	 Key([], "XF86MonBrightnessDown", lazy.spawn("xbacklight -dec 10"")),
 
          ### The essentials
          Key([mod], "Return",
