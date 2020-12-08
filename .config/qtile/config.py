@@ -10,7 +10,7 @@ from typing import List  # noqa: F401
 
 mod = "mod4"                                     # Sets mod key to SUPER/WINDOWS
 myTerm = "alacritty"                             # My terminal of choice
-myConfig = "/home/Sniki/.config/qtile/config.py"    # The Qtile config file location
+myConfig = "/home/sniki/.config/qtile/config.py"    # The Qtile config file location
 
 keys = [
     	 # Volume Control
@@ -20,7 +20,7 @@ keys = [
          
          # Brightness Control
     	 Key([], "XF86MonBrightnessUp", lazy.spawn("xbacklight -inc 10")),
-    	 Key([], "XF86MonBrightnessDown", lazy.spawn("xbacklight -dec 10"")),
+    	 Key([], "XF86MonBrightnessDown", lazy.spawn("xbacklight -dec 10")),
 
          ### The essentials
          Key([mod], "Return",
