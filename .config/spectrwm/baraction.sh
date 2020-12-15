@@ -48,7 +48,7 @@ bat1() {
 	echo "BAT1 $bstat$capac%"
 }
 
-## Backlight
+## BACKLIGHT
 bkl() {
 	bkl="$(xbacklight -get | awk '{print int($1+0.6)}' | sed 's/\..*//')%"
 	echo "BKL: $bkl"
