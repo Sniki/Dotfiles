@@ -402,7 +402,11 @@ def init_widgets_list():
 			background = colors[4],
 			fontsize = 14
 			),
-		widget.Pacman(
+		widget.CheckUpdates(
+			display_format = 'Updates: {updates}',
+			distro = 'Arch',
+			no_update_string = 'N/A',
+			restart_indicator = 'Restart',
 			update_interval = 1800,
 			foreground = colors[2],
 			mouse_callbacks = {'Button1': lambda qtile: qtile.cmd_spawn(myTerm + ' -e sudo pacman -Syu')},
@@ -457,7 +461,7 @@ def init_widgets_list():
 			fontsize = 37
 			),
 		widget.Wlan(
-			format = ' {essid} {quality}/70 ',
+			format = ' {essid} {percent:2.0%} ',
 			interface = 'wlan0',
 			disconnected_message = 'Disconnected',
 			background = colors[5],
@@ -510,7 +514,7 @@ def init_widgets_list():
 			fontsize = 37
 			),	       
 		widget.TextBox(
-			text=' ☀️',
+			text='☀️',
 			background = colors[4],
 			foreground = colors[2],
 			padding = 0,
@@ -519,7 +523,8 @@ def init_widgets_list():
 		widget.Backlight(
 			background = colors[4],
 			backlight_name="intel_backlight",
-			format = '{percent: 5.0%} ',
+			format = '{percent: 5.0%}  ',
+			padding = -5,
 			),
 		widget.TextBox(
 			text='',
