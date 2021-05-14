@@ -329,7 +329,7 @@ extension_defaults = widget_defaults.copy()
 def init_widgets_list():
     widgets_list = [
               widget.Image(
-                       filename = "~/.config/qtile/icons/python-modern.png",
+                       filename = "~/.config/qtile/icons/python-white.png",
                        mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn('rofi -show drun -config ~/.config/rofi/themes/dt-center.rasi -display-drun \"Run: \" -drun-display-format \"{name}\"')},
                        background = colors[5],
                        scale = True,
@@ -482,7 +482,7 @@ def init_widgets_list():
 		       low_percentage = 0.1,
 		       format = ' {char} {percent:2.0%} ',
 		       #format = ' {char} {percent:2.0%} {hour:d}:{min:02d} ',
-		       show_short_text = True,
+		       show_short_text = False,
 		       background = colors[4],
 		       padding = 0,
 		       ),
