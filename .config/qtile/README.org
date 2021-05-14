@@ -1,5 +1,60 @@
-# Laptop Qtile Configuration for Laptops by Sniki (Nord Theme)
+#+TITLE: Qtile Config
+#+PROPERTY: header-args :tangle config.py
 
+* Table of Contents :toc:
+- [[#about-this-config][About This Config]]
+- [[#features-of-qtile][Features of Qtile]]
+- [[#imports][Imports]]
+- [[#variables][Variables]]
+- [[#keybindings][Keybindings]]
+- [[#groups][Groups]]
+- [[#settings-for-some-layouts][Settings For Some Layouts]]
+- [[#layouts][Layouts]]
+- [[#colors][Colors]]
+- [[#prompt][Prompt]]
+- [[#default-widget-settings][Default Widget Settings]]
+- [[#widgets][Widgets]]
+- [[#screens][Screens]]
+- [[#some-important-functions][Some Important Functions]]
+- [[#drag-floating-windows][Drag floating windows]]
+- [[#floating-windows][Floating windows]]
+- [[#startup-applications][Startup applications]]
+
+* About This Config
+#+CAPTION: Qtile Scrot
+#+ATTR_HTML: :alt Qtile Scrot :title Qtile Scrot :align left
+[[https://gitlab.com/dwt1/dotfiles/-/raw/master/.screenshots/dotfiles07-thumb.png]]
+
+The following comments are the copyright and licensing information from the default
+qtile config. Copyright (c) 2010 Aldo Cortesi, 2010, 2014 dequis, 2012 Randall Ma,
+2012-2014 Tycho Andersen, 2012 Craig Barnes, 2013 horsik, 2013 Tao Sauvage
+
+Modified by Derek Taylor
+- My YouTube: [[http://www.youtube.com/c/DistroTube][http://www.youtube.com/c/DistroTube]]
+- My GitLab:  [[http://www.gitlab.com/dwt1/][http://www.gitlab.com/dwt1/]]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this
+software and associated documentation files (the "Software"), to deal in the Software
+without restriction, including without limitation the rights to use, copy, modify,
+merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be included in all copies
+or substantial portions of the Software.
+
+* Features of Qtile
+- Simple, small and extensible. It's easy to write your own layouts, widgets and commands.
+- Configured in Python.
+- Command shell that allows all aspects of Qtile to be managed and inspected.
+- Complete remote scriptability - write scripts to set up workspaces, manipulate windows, update status bar widgets and more.
+- Qtile's remote scriptability makes it one of the most thoroughly unit-tested window managers around.
+
+* Imports
+These are python modules that must be imported for this config.
+
+#+BEGIN_SRC python
+# -*- coding: utf-8 -*-
 import os
 import re
 import socket
@@ -10,54 +65,51 @@ from libqtile.command import lazy
 from libqtile import layout, bar, widget, hook
 from libqtile.lazy import lazy
 from typing import List  # noqa: F401
+#+END_SRC
 
+* Variables
+Just some variables I am setting to make my life easier.
+
+#+BEGIN_SRC python
 mod = "mod4"                                     # Sets mod key to SUPER/WINDOWS
 myTerm = "alacritty"                             # My terminal of choice
+#+END_SRC
 
+* Keybindings
+These are the keybindings for qtile.
+
+| A FEW IMPORTANT KEYBINDINGS | ASSOCIATED ACTION                                                        |
+|-----------------------------+--------------------------------------------------------------------------|
+| MODKEY + RETURN             | opens terminal (alacritty is the terminal but can be easily changed)     |
+| MODKEY + SHIFT + RETURN     | opens run launcher (dmenu is the run launcher but can be easily changed) |
+| MODKEY + TAB                | rotates through the available layouts                                    |
+| MODKEY + SHIFT + c          | closes window with focus                                                 |
+| MODKEY + SHIFT + r          | restarts qtile                                                           |
+| MODKEY + SHIFT + q          | quits qtile                                                              |
+| MODKEY + 1-9                | switch focus to workspace (1-9)                                          |
+| MODKEY + SHIFT + 1-9        | send focused window to workspace (1-9)                                   |
+| MODKEY + j                  | lazy layout down (switches focus between windows in the stack)           |
+| MODKEY + k                  | lazy layout up (switches focus between windows in the stack)             |
+| MODKEY + SHIFT + j          | lazy layout shuffle_down (rotates the windows in the stack)              |
+| MODKEY + SHIFT + k          | lazy layout shuffle_up (rotates the windows in the stack)                |
+| MODKEY + h                  | shrink size of window (MondadTall layout)                                |
+| MODKEY + l                  | expand size of window (MondadTall layout)                                |
+| MODKEY + w                  | switch focus to monitor 1                                                |
+| MODKEY + e                  | switch focus to monitor 2                                                |
+| MODKEY + r                  | switch focus to monitor 3                                                |
+| MODKEY + period             | switch focus to next monitor                                             |
+| MODKEY + comma              | switch focus to prev monitor                                             |
+
+#+BEGIN_SRC python
 keys = [
-
-	 # Volume Control
-	 Key([], "XF86AudioRaiseVolume", lazy.spawn("amixer sset Master 5%+")),
-	 Key([], "XF86AudioLowerVolume", lazy.spawn("amixer sset Master 5%-")),
-	 Key([], "XF86AudioMute", lazy.spawn("amixer sset Master toggle")),
-    
-	 # Microphone Mute
-	 Key([], "XF86AudioMicMute", lazy.spawn("amixer sset Capture toggle")),
-         
-	 # Brightness Control
-	 Key([], "XF86MonBrightnessUp", lazy.spawn("xbacklight -inc 5")),
-	 Key([], "XF86MonBrightnessDown", lazy.spawn("xbacklight -dec 5")),
-	 
-	 # F7 Video Mirror
-	 Key([], "XF86Display", lazy.spawn("")),
-	 
-	 # F8 Wireless / Bluetooth
-	 Key([], "XF86WLAN", lazy.spawn("")),
-	 
-	 # F8 Settings
-	 Key([], "XF86Tools", lazy.spawn("alacritty")),
-	 
-	 # F10 Search
-	 Key([], "XF86Search", lazy.spawn("rofi -show drun -config ~/.config/rofi/themes/dt-dmenu.rasi -display-drun \"Run: \" -drun-display-format \"{name}\"")),
-	 
-	 # F11 Launch Applications
-	 Key([], "XF86LaunchA", lazy.spawn("firefox")),
-	 
-	 # F12 Explorer
-	 Key([], "XF86Explorer", lazy.spawn("nautilus")),
-	 
-	 # Print Screen
-	 Key([], "Print", lazy.spawn("scrot '%Y-%m-%d_$wx$h.png' -e 'mv $f ~/Pictures/Screenshots/'")),
-	 Key([mod], "Print", lazy.spawn("scrot -s '%Y-%m-%d_$wx$h.png' -e 'mv $f ~/Pictures/Screenshots/'")),
-	
          ### The essentials
          Key([mod], "Return",
              lazy.spawn(myTerm+" -e fish"),
              desc='Launches My Terminal'
              ),
          Key([mod, "shift"], "Return",
-             # lazy.spawn("dmenu_run -p 'Run: '"),
-             lazy.spawn("rofi -show drun -config ~/.config/rofi/themes/dt-dmenu.rasi -display-drun \"Run: \" -drun-display-format \"{name}\""),
+             lazy.spawn("dmenu_run -p 'Run: '"),
+             # lazy.spawn("rofi -show drun -config ~/.config/rofi/themes/dt-dmenu.rasi -display-drun \"Run: \" -drun-display-format \"{name}\""),
              desc='Run Launcher'
              ),
          Key([mod], "Tab",
@@ -245,30 +297,44 @@ keys = [
                  )
          ])
 ]
+#+END_SRC
 
-group_names = [("", {'layout': 'monadtall'}),
-               ("", {'layout': 'monadtall'}),
-               ("", {'layout': 'monadtall'}),
-               ("", {'layout': 'monadtall'}),
-               ("", {'layout': 'monadtall'}),
-               ("", {'layout': 'monadtall'}),
-               ("", {'layout': 'monadtall'}),
-               ("", {'layout': 'monadtall'}),
-               #("", {'layout': 'monadtall'}),
-               ("", {'layout': 'floating'})]
+* Groups
+Groups are really workspaces.
+
+#+BEGIN_SRC python
+group_names = [("WWW", {'layout': 'monadtall'}),
+               ("DEV", {'layout': 'monadtall'}),
+               ("SYS", {'layout': 'monadtall'}),
+               ("DOC", {'layout': 'monadtall'}),
+               ("VBOX", {'layout': 'monadtall'}),
+               ("CHAT", {'layout': 'monadtall'}),
+               ("MUS", {'layout': 'monadtall'}),
+               ("VID", {'layout': 'monadtall'}),
+               ("GFX", {'layout': 'floating'})]
 
 groups = [Group(name, **kwargs) for name, kwargs in group_names]
 
 for i, (name, kwargs) in enumerate(group_names, 1):
     keys.append(Key([mod], str(i), lazy.group[name].toscreen()))        # Switch to another group
     keys.append(Key([mod, "shift"], str(i), lazy.window.togroup(name))) # Send current window to another group
+#+END_SRC
 
-layout_theme = {"border_width": 1,
-                "margin": 15,
-                "border_focus": "81a1c1",
-                "border_normal": "5e81ac"
+* Settings For Some Layouts
+Settings that I use in most layouts, so I'm defining them one time here.
+
+#+BEGIN_SRC python
+layout_theme = {"border_width": 2,
+                "margin": 8,
+                "border_focus": "e1acff",
+                "border_normal": "1D2330"
                 }
+#+END_SRC
 
+* Layouts
+The layouts that I use, plus several that I don't use. Uncomment the layouts you want; comment out the ones that you don't want to use.
+
+#+BEGIN_SRC python
 layouts = [
     #layout.MonadWide(**layout_theme),
     #layout.Bsp(**layout_theme),
@@ -285,15 +351,15 @@ layouts = [
     layout.RatioTile(**layout_theme),
     layout.TreeTab(
          font = "Ubuntu",
-         fontsize = 11,
+         fontsize = 10,
          sections = ["FIRST", "SECOND", "THIRD", "FOURTH"],
-         section_fontsize = 12,
+         section_fontsize = 10,
          border_width = 2,
-         bg_color = "3b4252",
-         active_bg = "5e81ac",
-         active_fg = "ffffff",
-         inactive_bg = "81a1c1",
-         inactive_fg = "ffffff",
+         bg_color = "1c1f24",
+         active_bg = "c678dd",
+         active_fg = "000000",
+         inactive_bg = "a9a1e1",
+         inactive_fg = "1c1f24",
          padding_left = 0,
          padding_x = 0,
          padding_y = 5,
@@ -305,19 +371,33 @@ layouts = [
          ),
     layout.Floating(**layout_theme)
 ]
+#+END_SRC
 
-colors = [["#3b4252", "#3b4252"], # panel background
+* Colors
+Defining some colors for use in our panel.  Colors have two values because you can use gradients.
+
+#+BEGIN_SRC python
+colors = [["#282c34", "#282c34"], # panel background
           ["#3d3f4b", "#434758"], # background for current screen tab
           ["#ffffff", "#ffffff"], # font color for group names
           ["#ff5555", "#ff5555"], # border line color for current tab
-          ["#5e81ac", "#5e81ac"], # border line color for 'other tabs' and color for 'odd widgets'
-          ["#81a1c1", "#81a1c1"], # color for the 'even widgets'
-          ["#eceff4", "#eceff4"], # window name
-          ["#eceff4", "#eceff4"], # backbround for inactive screens
-          ["#3b4252", "#3b4252"]] # GroupBox Color
+          ["#74438f", "#74438f"], # border line color for 'other tabs' and color for 'odd widgets'
+          ["#4f76c7", "#4f76c7"], # color for the 'even widgets'
+          ["#e1acff", "#e1acff"], # window name
+          ["#ecbbfb", "#ecbbfb"]] # backbround for inactive screens
+#+END_SRC
 
+* Prompt
+Settings for the qtile run prompt, even though I don't actually use this. I prefer to use dmenu instead.
+
+#+BEGIN_SRC python
 prompt = "{0}@{1}: ".format(os.environ["USER"], socket.gethostname())
+#+END_SRC
 
+* Default Widget Settings
+Defining a few default widget key values.
+
+#+BEGIN_SRC python
 ##### DEFAULT WIDGET SETTINGS #####
 widget_defaults = dict(
     font="Ubuntu Mono",
@@ -326,50 +406,51 @@ widget_defaults = dict(
     background=colors[2]
 )
 extension_defaults = widget_defaults.copy()
+#+END_SRC
 
+* Widgets
+This is the bar, or the panel, and the widgets within the bar.
+
+#+BEGIN_SRC python
 def init_widgets_list():
     widgets_list = [
-              widget.Image(
-                       filename = "~/.config/qtile/icons/python-modern.png",
-                       mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn('rofi -show drun -config ~/.config/rofi/themes/dt-center.rasi -display-drun \"Run: \" -drun-display-format \"{name}\"')},
-                       background = colors[5],
-                       scale = True,
-                       margin = 5
+              widget.Sep(
+                       linewidth = 0,
+                       padding = 6,
+                       foreground = colors[2],
+                       background = colors[0]
                        ),
-              widget.TextBox(
-                       text = '',
-                       background = colors[5],
-                       foreground = colors[4],
-                       padding = 0,
-                       fontsize = 59
+              widget.Image(
+                       filename = "~/.config/qtile/icons/python-white.png",
+                       scale = "False",
+                       mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn(myTerm)}
+                       ),
+             widget.Sep(
+                       linewidth = 0,
+                       padding = 6,
+                       foreground = colors[2],
+                       background = colors[0]
                        ),
               widget.GroupBox(
                        font = "Ubuntu Bold",
-                       fontsize = 15,
+                       fontsize = 9,
                        margin_y = 3,
                        margin_x = 0,
                        padding_y = 5,
-                       padding_x = 5,
+                       padding_x = 3,
                        borderwidth = 3,
                        active = colors[2],
                        inactive = colors[7],
                        rounded = False,
-                       highlight_color = colors[4],
+                       highlight_color = colors[1],
                        highlight_method = "line",
                        this_current_screen_border = colors[6],
                        this_screen_border = colors [4],
                        other_current_screen_border = colors[6],
                        other_screen_border = colors[4],
                        foreground = colors[2],
-                       background = colors[4]
+                       background = colors[0]
                        ),
-              widget.TextBox(
-                       text = '',
-                       background = colors[4],
-                       foreground = colors[1],
-                       padding = 0,
-                       fontsize = 59
-                       ),         
               widget.Prompt(
                        prompt = prompt,
                        font = "Ubuntu Mono",
@@ -388,6 +469,10 @@ def init_widgets_list():
                        background = colors[0],
                        padding = 0
                        ),
+              widget.Systray(
+                       background = colors[0],
+                       padding = 5
+                       ),
               widget.Sep(
                        linewidth = 0,
                        padding = 6,
@@ -399,103 +484,66 @@ def init_widgets_list():
                        background = colors[0],
                        foreground = colors[4],
                        padding = 0,
-                       fontsize = 59
+                       fontsize = 37
                        ),
-              widget.Wlan(
-             	       format = ' {essid} - {percent:2.0%} ',
-		       interface = 'wlp4s0',
-		       disconnected_message = 'Disconnected',
-		       background = colors[4],
+             widget.Net(
+                       interface = "enp6s0",
+                       format = '{down} ↓↑ {up}',
+                       foreground = colors[2],
+                       background = colors[4],
+                       padding = 5
                        ),
               widget.TextBox(
                        text = '',
                        background = colors[4],
                        foreground = colors[5],
                        padding = 0,
-                       fontsize = 59
+                       fontsize = 37
                        ),
-              widget.OpenWeather(
-              	       cityid = 788652,
-              	       #format = '{location_city}: {main_temp} °{units_temperature} {weather_details} ',
-              	       format = '{main_temp} °{units_temperature} {weather_details} ',
-              	       metric = True,
-              	       background = colors[5],
-              	       fontsize = 14,
-              	       #mouse_callbacks = 'https://openweathermap.org/city/788652'
-              	       ),
               widget.TextBox(
-                       text = '',
+                       text = " 🌡 TEMP NOT SHOWN ",
+                       padding = 2,
+                       foreground = colors[2],
                        background = colors[5],
-                       foreground = colors[4],
-                       padding = 0,
-                       fontsize = 59
+                       fontsize = 11
                        ),
-              widget.TextBox(
-		       text='☀',
-		       background = colors[4],
-		       foreground = colors[2],
-		       padding = 0,
-		       fontsize = 22
-		       ),
-              widget.Backlight(
-		       background = colors[4],
-		       backlight_name="intel_backlight",
-		       format = '{percent: 5.0%}  ',
-		       padding = -5,
-		       ),
+              # widget.ThermalSensor(
+              #          foreground = colors[2],
+              #          background = colors[5],
+              #          threshold = 90,
+              #          padding = 5
+              #          ),
               widget.TextBox(
                        text='',
-                       background = colors[4],
-                       foreground = colors[5],
-                       padding = 0,
-                       fontsize = 59
-                       ),         
-              widget.Battery(
-		       battery = 0,
-		       charge_char = '',
-		       discharge_char = '',
-		       empty_char = '',
-		       full_char = '',
-		       unknown_char = '',
-		       #unknown_char = '',
-		       low_percentage = 0.1,
-		       format = ' {char} {percent:2.0%} ',
-		       #format = ' {char} {percent:2.0%} {hour:d}:{min:02d} ',
-		       show_short_text = False,
-		       background = colors[5],
-		       padding = 0,
-		       ),         
-	      widget.TextBox(
-                       text = '',
                        background = colors[5],
                        foreground = colors[4],
                        padding = 0,
-                       fontsize = 59
+                       fontsize = 37
                        ),
-	      widget.Battery(
-		       battery = 1,
-		       charge_char = '',
-		       discharge_char = '',
-		       empty_char = '',
-		       full_char = '',
-		       unknown_char = '',
-		       #unknown_char = '',
-		       low_percentage = 0.1,
-		       format = ' {char} {percent:2.0%} ',
-		       #format = ' {char} {percent:2.0%} {hour:d}:{min:02d} ',
-		       show_short_text = True,
-		       background = colors[4],
-		       padding = 0,
-		       ),
+              widget.TextBox(
+                       text = " ⟳",
+                       padding = 2,
+                       foreground = colors[2],
+                       background = colors[4],
+                       fontsize = 14
+                       ),
+              widget.CheckUpdates(
+                       update_interval = 1800,
+                       distro = "Arch_checkupdates",
+                       display_format = "{updates} Updates",
+                       foreground = colors[2],
+                       mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn(myTerm + ' -e sudo pacman -Syu')},
+                       background = colors[4]
+                       ),
               widget.TextBox(
                        text = '',
                        background = colors[4],
                        foreground = colors[5],
                        padding = 0,
-                       fontsize = 59
+                       fontsize = 37
                        ),
               widget.TextBox(
-                       text = "🖴",
+                       text = " 🖬",
                        foreground = colors[2],
                        background = colors[5],
                        padding = 0,
@@ -505,7 +553,6 @@ def init_widgets_list():
                        foreground = colors[2],
                        background = colors[5],
                        mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn(myTerm + ' -e htop')},
-                       fontsize = 14,
                        padding = 5
                        ),
               widget.TextBox(
@@ -513,19 +560,18 @@ def init_widgets_list():
                        background = colors[5],
                        foreground = colors[4],
                        padding = 0,
-                       fontsize = 59
+                       fontsize = 37
                        ),
               widget.TextBox(
-                       text = "",
+                       text = " ₿",
                        padding = 0,
                        foreground = colors[2],
                        background = colors[4],
-                       fontsize = 14
+                       fontsize = 12
                        ),
               widget.BitcoinTicker(
                        foreground = colors[2],
                        background = colors[4],
-                       fontsize = 14,
                        padding = 5
                        ),
               widget.TextBox(
@@ -533,27 +579,25 @@ def init_widgets_list():
                        background = colors[4],
                        foreground = colors[5],
                        padding = 0,
-                       fontsize = 59
+                       fontsize = 37
                        ),
               widget.TextBox(
-                      text = "",
+                      text = " Vol:",
                        foreground = colors[2],
                        background = colors[5],
-                       padding = 0,
-                       fontsize = 14
+                       padding = 0
                        ),
               widget.Volume(
                        foreground = colors[2],
                        background = colors[5],
-                       padding = 5,
-                       fontsize = 14
+                       padding = 5
                        ),
               widget.TextBox(
                        text = '',
                        background = colors[5],
                        foreground = colors[4],
                        padding = 0,
-                       fontsize = 59
+                       fontsize = 37
                        ),
               widget.CurrentLayoutIcon(
                        custom_icon_paths = [os.path.expanduser("~/.config/qtile/icons")],
@@ -565,46 +609,28 @@ def init_widgets_list():
               widget.CurrentLayout(
                        foreground = colors[2],
                        background = colors[4],
-                       padding = 5,
-                       fontsize = 14
+                       padding = 5
                        ),
               widget.TextBox(
                        text = '',
                        background = colors[4],
                        foreground = colors[5],
                        padding = 0,
-                       fontsize = 59
+                       fontsize = 37
                        ),
               widget.Clock(
                        foreground = colors[2],
                        background = colors[5],
-                       format = "%A, %B %d - %H:%M ",
-                       fontsize = 14
+                       format = "%A, %B %d - %H:%M "
                        ),
-             #widget.TextBox(
-             #          text = '',
-             #          background = colors[5],
-             #          foreground = colors[4],
-             #          padding = 0,
-             #          fontsize = 59
-             #          ),
-             #widget.TextBox(
-             # 	       text = "⏻",
-             # 	       background = colors[4],
-             #          foreground = colors[2],
-             #          #font="Font Awesome 5 Free Solid",
-             #          fontsize = 17,
-             #          padding = 17,
-             #          mouse_callbacks={"Button1": lambda: qtile.cmd_spawn("./.config/rofi/powermenu/powermenu.sh")},
-             #          ),
-             #widget.Systray(
-             #          background = colors[4],
-             #          #icon_size = 25,
-             #          padding = 50
-             #          ),
               ]
     return widgets_list
+#+END_SRC
 
+* Screens
+Screen settings for my triple monitor setup.
+
+#+BEGIN_SRC python
 def init_widgets_screen1():
     widgets_screen1 = init_widgets_list()
     del widgets_screen1[7:8]               # Slicing removes unwanted widgets (systray) on Monitors 1,3
@@ -615,16 +641,20 @@ def init_widgets_screen2():
     return widgets_screen2                 # Monitor 2 will display all widgets in widgets_list
 
 def init_screens():
-    return [Screen(top=bar.Bar(widgets=init_widgets_screen1(), opacity=1.0, size=30)),
-            Screen(top=bar.Bar(widgets=init_widgets_screen2(), opacity=1.0, size=30)),
-            Screen(top=bar.Bar(widgets=init_widgets_screen1(), opacity=1.0, size=30))]
+    return [Screen(top=bar.Bar(widgets=init_widgets_screen1(), opacity=1.0, size=20)),
+            Screen(top=bar.Bar(widgets=init_widgets_screen2(), opacity=1.0, size=20)),
+            Screen(top=bar.Bar(widgets=init_widgets_screen1(), opacity=1.0, size=20))]
 
 if __name__ in ["config", "__main__"]:
     screens = init_screens()
     widgets_list = init_widgets_list()
     widgets_screen1 = init_widgets_screen1()
     widgets_screen2 = init_widgets_screen2()
+#+END_SRC
 
+* Some Important Functions
+
+#+begin_src python
 def window_to_prev_group(qtile):
     if qtile.currentWindow is not None:
         i = qtile.groups.index(qtile.currentGroup)
@@ -651,7 +681,12 @@ def switch_screens(qtile):
     i = qtile.screens.index(qtile.current_screen)
     group = qtile.screens[i - 1].group
     qtile.current_screen.set_group(group)
+#+end_src
 
+* Drag floating windows
+Defining some mousebindings for use with floating windows.
+
+#+BEGIN_SRC python
 mouse = [
     Drag([mod], "Button1", lazy.window.set_position_floating(),
          start=lazy.window.get_position()),
@@ -666,25 +701,30 @@ main = None
 follow_mouse_focus = True
 bring_front_click = False
 cursor_warp = False
+#+END_SRC
 
+* Floating windows
+Defining what class of windows should always be floating.
+
+#+BEGIN_SRC python
 floating_layout = layout.Floating(float_rules=[
     # Run the utility of `xprop` to see the wm class and name of an X client.
     # default_float_rules include: utility, notification, toolbar, splash, dialog,
     # file_progress, confirm, download and error.
-    *layout.Floating.default_float_rules,
-    Match(wm_class='confirmreset'),  # gitk
-    Match(wm_class='makebranch'),  # gitk
-    Match(wm_class='maketag'),  # gitk
-    Match(wm_class='ssh-askpass'),  # ssh-askpass
-    Match(title='branchdialog'),  # gitk
-    Match(title='pinentry'),  # GPG key password entry
-    Match(wm_class='Org.gnome.Nautilus'), # Nautilus File Manager
-    Match(wm_class='Gnome-calculator'),  # Gnome Calculator   
+    ,*layout.Floating.default_float_rules,
+    Match(title='Confirmation'),      # tastyworks exit box
+    Match(title='Qalculate!'),        # qalculate-gtk
+    Match(wm_class='kdenlive'),       # kdenlive
+    Match(wm_class='pinentry-gtk-2'), # GPG key password entry
 ])
-
 auto_fullscreen = True
 focus_on_window_activation = "smart"
+#+END_SRC
 
+* Startup applications
+The applications that should autostart every time qtile is started.
+
+#+BEGIN_SRC python
 @hook.subscribe.startup_once
 def start_once():
     home = os.path.expanduser('~')
@@ -698,4 +738,5 @@ def start_once():
 #
 # We choose LG3D to maximize irony: it is a 3D non-reparenting WM written in
 # java that happens to be on java's whitelist.
-wmname = "Qtile"
+wmname = "LG3D"
+#+END_SRC

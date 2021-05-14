@@ -1,4 +1,7 @@
-#! /bin/bash 
+#!/usr/bin/env bash 
+
+lxsession &
 picom &
 nitrogen --restore &
-urxvtd -q -o -f &
+nm-applet &
+dunst &
