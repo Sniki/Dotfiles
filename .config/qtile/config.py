@@ -246,15 +246,15 @@ keys = [
          ])
 ]
 
-group_names = [("", {'layout': 'monadtall'}),
-               ("", {'layout': 'monadtall'}),
+group_names = [("", {'layout': 'monadtall', 'matches':[Match(wm_class=["firefox"])]}),
+               ("", {'layout': 'monadtall', 'matches':[Match(wm_class=["Alacritty"])]}),
                ("", {'layout': 'monadtall'}),
-               ("", {'layout': 'monadtall'}),
-               ("", {'layout': 'monadtall'}),
-               ("", {'layout': 'monadtall'}),
-               ("", {'layout': 'monadtall'}),
+               ("", {'layout': 'monadtall', 'matches':[Match(wm_class=["libreoffice-writer", "", "", "", ""])]}),
+               ("", {'layout': 'monadtall', 'matches':[Match(wm_class=["code-oss", "gedit"])]}),
+               ("", {'layout': 'monadtall', 'matches':[Match(wm_class=["Telegram", "TelegramDesktop"])]}),
+               ("", {'layout': 'monadtall', 'matches':[Match(wm_class=["viewnior"])]}),
                ("", {'layout': 'monadtall'}),
-               ("", {'layout': 'floating'})]
+               ("", {'layout': 'floating', 'matches':[Match(wm_class=["Org.gnome.Nautilus"])]})]
 
 groups = [Group(name, **kwargs) for name, kwargs in group_names]
 
