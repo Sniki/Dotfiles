@@ -679,7 +679,7 @@ floating_layout = layout.Floating(float_rules=[
     Match(title='pinentry'),  # GPG key password entry
     Match(wm_class='Org.gnome.Nautilus'), # Nautilus File Manager
     Match(wm_class='Gnome-calculator'),  # Gnome Calculator   
-])
+],  **layout_theme) # Fix floating layout theme to match the default
 
 auto_fullscreen = True
 focus_on_window_activation = "smart"
